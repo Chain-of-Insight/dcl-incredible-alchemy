@@ -73,7 +73,7 @@ export class Mineral extends Entity {
         },
         { 
           button: ActionButton.POINTER, 
-          hoverText: (this.mineralType == ZINCITE) ? 'Zincite Crystal' : this.mineralType.charAt(0).toUpperCase() + this.mineralType.slice(1) + ' Ore' 
+          hoverText: (this.mineralType == ZINCITE) ? this.mineralType + ' crystal' : this.mineralType + ' ore' 
         }
       )
     );
@@ -94,6 +94,37 @@ export class Mineral extends Entity {
 
     return spawnPosition;
   };
+
+  public getInventory(): Array<string> {
+    return inventory;
+  };
+
+  public destroy() {
+    if (this.isAddedToEngine()) {
+      engine.removeEntity(this);
+    }
+  };
+
+  public reset() {
+    if (inventory.length) {
+      inventory = [];
+    }
+
+    if (this.isAddedToEngine()) {
+      engine.removeEntity(this);
+    }
+
+    this.icon = null;
+    this.isMining = false;
+
+    let position = this.getSpawnPosition();
+    this.addComponent(new Transform({
+      position: new Vector3(position.x, position.y ,position.z),
+      scale: new Vector3(1,1,1)
+    }));
+
+    engine.addEntity(this);
+  }
 
   private randomCoordinate(spawnAxis: number = 0) {
     let randomNum = Math.round(Math.random() * (maxSpawn - minSpawn) + minSpawn);

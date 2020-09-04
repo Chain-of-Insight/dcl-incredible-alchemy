@@ -1,6 +1,6 @@
 // import utils from '../node_modules/decentraland-ecs-utils/index';
 // import { InterpolationType } from '../node_modules/decentraland-ecs-utils/transform/math/interpolation';
-// import * as ui from '../node_modules/@dcl/ui-utils/index';
+import * as ui from '../node_modules/@dcl/ui-utils/index';
 
 // import { ImageSection } from '../node_modules/@dcl/ui-utils/utils/types';
 
@@ -63,7 +63,7 @@ spritePositions[AMETHYST] = {
   sourceTop: 95
 };
 
-// 3D Models
+// 3D Models (minerals)
 const models = {};
 models[SPHALERITE] = new GLTFShape('models/minerals/sphalerite.glb');
 models[GALENA] = new GLTFShape('models/minerals/galena.glb');
@@ -73,6 +73,7 @@ models[CHALCOPYRITE] = new GLTFShape('models/minerals/chalcopyrite.glb');
 models[HOPEITE] = new GLTFShape('models/minerals/hopeite.glb');
 models[GHANITE] = new GLTFShape('models/minerals/ghanite.glb');
 models[AMETHYST] = new GLTFShape('models/minerals/amethyst.glb');
+models['alchemizer'] = new GLTFShape('models/alchemy/Lab_Sphere_01.glb');
 
 // Create minerals
 // Sphalerite (y)
@@ -123,3 +124,162 @@ const amethyst = new Mineral(
   AMETHYST,
   spritePositions[AMETHYST]
 );
+
+// Alchemizer inventory
+let alchemizerInventory = [];
+let MineralModel = sphalerite;
+
+// Alchmey station
+const alchemizer = new Entity();
+alchemizer.addComponent(models['alchemizer']);
+alchemizer.addComponent(new Transform({ position: new Vector3(7, 0, 7) }));
+engine.addEntity(alchemizer);
+
+alchemizer.addComponent(
+  new OnPointerDown(
+    (e) => {
+      if (alchemizerInventory.length < 3) {
+        alchemizerInventory = MineralModel.getInventory();
+        alchemizer.addComponentOrReplace(
+          new OnPointerDown(
+            (e) => {
+              let result = smeltingEvent(alchemizerInventory);
+              if (result) {
+                // Gallium was produced!
+                ui.displayAnnouncement('Galium added to your inventory!');
+                
+                // Remove minerals from engine
+                removeMinerals(alchemizerInventory);
+                
+                // Set Galium icon
+              } else {
+                // Alchemy failed
+                ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+        
+                // Remove minerals from engine
+                resetMinerals();
+              }
+            },
+            { 
+              button: ActionButton.SECONDARY,
+              hoverText: 'alchemize'
+            }
+          )
+        )
+      }
+    },
+    { 
+      button: ActionButton.PRIMARY,
+      hoverText: 'deposit ore'
+    }
+  )
+);
+
+function smeltingEvent(items: Array<string>): boolean {
+  let isGallium = false;
+
+  // Alchemizer must be full
+  if (items.length !== 3) {
+    return false;  
+  }
+
+  // Calculate Gallium production 
+  let slot1: boolean = false, 
+      slot2: boolean = false, 
+      slot3: boolean = false;
+  // Inventory slot 1
+  switch (items[0]) {
+    // (y)
+    case SPHALERITE:
+      slot1 = true;
+      break;
+    // (y)
+    case GHANITE:
+      slot1 = true;
+      break;
+    // (m)
+    case HOPEITE: // 1 slot = 50% chance, 2 slots = 25% chance, 3 slots = 12.5% chance
+      slot1 = Math.random() >= 0.5;
+      break;
+    default:
+      slot1 = false;
+  }
+  // Inventory slot 2
+  switch (items[1]) {
+    // (y)
+    case SPHALERITE:
+      slot2 = true;
+      break;
+    // (y)
+    case GHANITE:
+      slot2 = true;
+      break;
+    // (m)
+    case HOPEITE:
+      slot2 = Math.random() >= 0.5;
+      break;
+    default:
+      slot2 = false;
+  }
+  // Inventory slot 3
+  switch (items[2]) {
+    // (y)
+    case SPHALERITE:
+      slot3 = true;
+      break;
+    // (y)
+    case GHANITE:
+      slot3 = true;
+      break;
+    // (m)
+    case HOPEITE:
+      slot3 = Math.random() >= 0.5;
+      break;
+    default:
+      slot3 = false;
+  }
+
+  if (slot1 && slot2 && slot3) {
+    isGallium = true;
+  }
+
+  return isGallium;
+};
+
+/**
+ * Utility function to clear minerals
+ * @param {Array<string>} removed : An array of minerals already removed from the scene
+ */
+function removeMinerals(removed: Array<string>) {
+  if (removed.indexOf(SPHALERITE) == -1) {
+    sphalerite.destroy();
+  }
+  if (removed.indexOf(GALENA) == -1) {
+    galena.destroy();
+  }
+  if (removed.indexOf(PYRITE) == -1) {
+    pyrite.destroy();
+  }
+  if (removed.indexOf(ZINCITE) == -1) {
+    zincite.destroy();
+  }
+  if (removed.indexOf(CHALCOPYRITE) == -1) {
+    chalcopyrite.destroy();
+  }
+  if (removed.indexOf(HOPEITE) == -1) {
+    hopeite.destroy();
+  }
+  if (removed.indexOf(GHANITE) == -1) {
+    ghanite.destroy();
+  }
+  if (removed.indexOf(AMETHYST) == -1) {
+    amethyst.destroy();
+  }
+};
+
+/**
+ * Reset the state and random positions of all minerals
+ */
+function resetMinerals() {//here
+  // TODO
+};
