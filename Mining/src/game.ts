@@ -55,7 +55,7 @@ sphalerite.addComponent(
     (e) => {
       if (inventory.length < 3) {
         // Play digging sound
-        diggingSound.getComponent(AudioSource).playOnce()
+        diggingSound.getComponent(AudioSource).playOnce();
         // Reduce or remove pile ore deposit
         miningEvent(SPHALERITE);
       } else {
@@ -83,7 +83,7 @@ galena.addComponent(
     (e) => {
       if (inventory.length < 3) {
         // Play digging sound
-        diggingSound.getComponent(AudioSource).playOnce()
+        diggingSound.getComponent(AudioSource).playOnce();
         // Reduce or remove pile ore deposit
         miningEvent(GALENA);
       } else {
@@ -111,7 +111,7 @@ pyrite.addComponent(
     (e) => {
       if (inventory.length < 3) {
         // Play digging sound
-        diggingSound.getComponent(AudioSource).playOnce()
+        diggingSound.getComponent(AudioSource).playOnce();
         // Reduce or remove pile ore deposit
         miningEvent(PYRITE);
       } else {
@@ -139,9 +139,11 @@ zincite.addComponent(
     (e) => {
       if (inventory.length < 3) {
         // Play digging sound
-        diggingSound.getComponent(AudioSource).playOnce()
+        diggingSound.getComponent(AudioSource).playOnce();
         // Reduce or remove pile ore deposit
         miningEvent(ZINCITE);
+      } else {
+        ui.displayAnnouncement('You\'re carrying a heavy load');
       }
     },
     { 
@@ -151,15 +153,119 @@ zincite.addComponent(
   )
 );
 
+// Chalcopyrite (n)
+const chalcopyrite = new Entity();
+chalcopyrite.addComponent(new GLTFShape('models/minerals/chalcopyrite.glb'));
+chalcopyrite.addComponent(new Transform({
+  position: new Vector3(14,0,14)
+}));
+
+engine.addEntity(chalcopyrite);
+
+chalcopyrite.addComponent(
+  new OnPointerDown(
+    (e) => {
+      if (inventory.length < 3) {
+        // Play digging sound
+        diggingSound.getComponent(AudioSource).playOnce();
+        // Reduce or remove pile ore deposit
+        miningEvent(CHALCOPYRITE);
+      } else {
+        ui.displayAnnouncement('You\'re carrying a heavy load');
+      }
+    },
+    { 
+      button: ActionButton.POINTER, 
+      hoverText: 'Chalcopyrite Ore' 
+    }
+  )
+);
+
+// Hopeite (m)
+const hopeite = new Entity();
+hopeite.addComponent(new GLTFShape('models/minerals/hopeite.glb'));
+hopeite.addComponent(new Transform({
+  position: new Vector3(11,0,12)
+}));
+
+engine.addEntity(hopeite);
+
+hopeite.addComponent(
+  new OnPointerDown(
+    (e) => {
+      if (inventory.length < 3) {
+        // Play digging sound
+        diggingSound.getComponent(AudioSource).playOnce();
+        // Reduce or remove pile ore deposit
+        miningEvent(HOPEITE);
+      } else {
+        ui.displayAnnouncement('You\'re carrying a heavy load');
+      }
+    },
+    { 
+      button: ActionButton.POINTER, 
+      hoverText: 'Hopeite Ore' 
+    }
+  )
+);
+
+// Ghanite (y)
+const ghanite = new Entity();
+ghanite.addComponent(new GLTFShape('models/minerals/ghanite.glb'));
+ghanite.addComponent(new Transform({
+  position: new Vector3(13,0,9)
+}));
+
+engine.addEntity(ghanite);
+
+ghanite.addComponent(
+  new OnPointerDown(
+    (e) => {
+      if (inventory.length < 3) {
+        // Play digging sound
+        diggingSound.getComponent(AudioSource).playOnce();
+        // Reduce or remove pile ore deposit
+        miningEvent(GHANITE);
+      } else {
+        ui.displayAnnouncement('You\'re carrying a heavy load');
+      }
+    },
+    { 
+      button: ActionButton.POINTER, 
+      hoverText: 'Ghanite Ore' 
+    }
+  )
+);
+
+// Amethyst (n)
+const amethyst = new Entity();
+amethyst.addComponent(new GLTFShape('models/minerals/amethyst.glb'));
+amethyst.addComponent(new Transform({
+  position: new Vector3(11,0,8)
+}));
+
+engine.addEntity(amethyst);
+
+amethyst.addComponent(
+  new OnPointerDown(
+    (e) => {
+      if (inventory.length < 3) {
+        // Play digging sound
+        diggingSound.getComponent(AudioSource).playOnce();
+        // Reduce or remove pile ore deposit
+        miningEvent(AMETHYST);
+      } else {
+        ui.displayAnnouncement('You\'re carrying a heavy load');
+      }
+    },
+    { 
+      button: ActionButton.POINTER, 
+      hoverText: 'Amethyst Ore' 
+    }
+  )
+);
+
 function miningEvent(type: string) {
-
-  /*
-  const CHALCOPYRITE = "chalcopyrite";
-  const HOPEITE = "hopeite";
-  const GHANITE = "ghanite";
-  const AMETHYST = "amethyst";
-  */
-
   switch (type) {
     case SPHALERITE:
       sphaleriteMiningEvent();
@@ -172,6 +278,18 @@ function miningEvent(type: string) {
       break;
     case ZINCITE:
       zinciteMiningEvent();
+      break;
+    case CHALCOPYRITE:
+      chalcopyriteMiningEvent();
+      break;
+    case HOPEITE:
+      hopeiteMiningEvent();
+      break;
+    case GHANITE:
+      ghaniteMiningEvent();
+      break;
+    case AMETHYST:
+      amethystMiningEvent();
       break;
   }
 }
@@ -210,7 +328,7 @@ function sphaleriteMiningEvent() {
 
   } else {
     isMiningSphalerite = true;
-    let currentScale = sphalerite.getComponent(Transform).position.z
+    let currentScale = sphalerite.getComponent(Transform).position.z;
     let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
     let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
 
@@ -260,7 +378,7 @@ function galenaMiningEvent() {
 
   } else {
     isMiningGalena = true;
-    let currentScale = galena.getComponent(Transform).position.z
+    let currentScale = galena.getComponent(Transform).position.z;
     let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
     let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
 
@@ -310,7 +428,7 @@ function pyriteMiningEvent() {
 
   } else {
     isMiningPyrite = true;
-    let currentScale = pyrite.getComponent(Transform).position.z
+    let currentScale = pyrite.getComponent(Transform).position.z;
     let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
     let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
 
@@ -360,11 +478,211 @@ function zinciteMiningEvent() {
 
   } else {
     isMiningZincite = true;
-    let currentScale = pyrite.getComponent(Transform).position.z
+    let currentScale = zincite.getComponent(Transform).position.z;
     let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
     let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
 
     zincite.addComponent(
+      new utils.ScaleTransformComponent(
+        startScale,
+        endScale,
+        0.5,
+        null,
+        InterpolationType.LINEAR
+      )
+    );
+  }
+};
+
+function chalcopyriteMiningEvent() {
+  if (isMiningChalcopyrite) {
+    engine.removeEntity(chalcopyrite);
+    let xOffset = 0;
+    switch (inventory.length) {
+      case 0:
+        xOffset = -25;
+        break;
+      case 1:
+        xOffset = -80;
+        break;
+      case 2:
+        xOffset = -135;
+        break;
+    }
+
+    // Handle Inventory
+    chalcopyriteIcon = new ui.SmallIcon(
+      'models/icons/ores.png', 
+      // x, y
+      xOffset, 80, 
+      // Width, height
+      48, 48, 
+      // Sprite sheet position
+      {sourceWidth: 50, sourceHeight: 50, sourceLeft: 192,  sourceTop: 95}
+    );
+    
+    // Add to inventory
+    inventory.push(CHALCOPYRITE);
+
+    ui.displayAnnouncement('Chalcopyrite added to your inventory');
+
+  } else {
+    isMiningChalcopyrite = true;
+    let currentScale = chalcopyrite.getComponent(Transform).position.z;
+    let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
+    let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
+
+    chalcopyrite.addComponent(
+      new utils.ScaleTransformComponent(
+        startScale,
+        endScale,
+        0.5,
+        null,
+        InterpolationType.LINEAR
+      )
+    );
+  }
+};
+
+function hopeiteMiningEvent() {
+  if (isMiningHopeite) {
+    engine.removeEntity(hopeite);
+    let xOffset = 0;
+    switch (inventory.length) {
+      case 0:
+        xOffset = -25;
+        break;
+      case 1:
+        xOffset = -80;
+        break;
+      case 2:
+        xOffset = -135;
+        break;
+    }
+
+    // Handle Inventory
+    hopeiteIcon = new ui.SmallIcon(
+      'models/icons/ores.png', 
+      // x, y
+      xOffset, 80, 
+      // Width, height
+      48, 48, 
+      // Sprite sheet position
+      {sourceWidth: 50, sourceHeight: 50, sourceLeft: 192}
+    );
+    
+    // Add to inventory
+    inventory.push(HOPEITE);
+
+    ui.displayAnnouncement('Hopeite added to your inventory');
+
+  } else {
+    isMiningHopeite = true;
+    let currentScale = hopeite.getComponent(Transform).position.z;
+    let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
+    let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
+
+    hopeite.addComponent(
+      new utils.ScaleTransformComponent(
+        startScale,
+        endScale,
+        0.5,
+        null,
+        InterpolationType.LINEAR
+      )
+    );
+  }
+};
+
+function ghaniteMiningEvent() {
+  if (isMiningGhanite) {
+    engine.removeEntity(ghanite);
+    let xOffset = 0;
+    switch (inventory.length) {
+      case 0:
+        xOffset = -25;
+        break;
+      case 1:
+        xOffset = -80;
+        break;
+      case 2:
+        xOffset = -135;
+        break;
+    }
+
+    // Handle Inventory
+    ghaniteIcon = new ui.SmallIcon(
+      'models/icons/ores.png', 
+      // x, y
+      xOffset, 80, 
+      // Width, height
+      48, 48, 
+      // Sprite sheet position
+      {sourceWidth: 50, sourceHeight: 50, sourceLeft: 336}
+    );
+    
+    // Add to inventory
+    inventory.push(GHANITE);
+
+    ui.displayAnnouncement('Ghanite added to your inventory');
+
+  } else {
+    isMiningGhanite = true;
+    let currentScale = ghanite.getComponent(Transform).position.z;
+    let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
+    let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
+
+    ghanite.addComponent(
+      new utils.ScaleTransformComponent(
+        startScale,
+        endScale,
+        0.5,
+        null,
+        InterpolationType.LINEAR
+      )
+    );
+  }
+};
+
+function amethystMiningEvent() {
+  if (isMiningAmethyst) {
+    engine.removeEntity(amethyst);
+    let xOffset = 0;
+    switch (inventory.length) {
+      case 0:
+        xOffset = -25;
+        break;
+      case 1:
+        xOffset = -80;
+        break;
+      case 2:
+        xOffset = -135;
+        break;
+    }
+
+    // Handle Inventory
+    amethystIcon = new ui.SmallIcon(
+      'models/icons/ores.png', 
+      // x, y
+      xOffset, 80, 
+      // Width, height
+      48, 48, 
+      // Sprite sheet position
+      {sourceWidth: 50, sourceHeight: 50, sourceLeft: 240, sourceTop: 95}
+    );
+    
+    // Add to inventory
+    inventory.push(AMETHYST);
+
+    ui.displayAnnouncement('Amethyst added to your inventory');
+
+  } else {
+    isMiningAmethyst = true;
+    let currentScale = amethyst.getComponent(Transform).position.z;
+    let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
+    let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
+
+    amethyst.addComponent(
       new utils.ScaleTransformComponent(
         startScale,
         endScale,
