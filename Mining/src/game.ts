@@ -138,8 +138,16 @@ engine.addEntity(alchemizer);
 alchemizer.addComponent(
   new OnPointerDown(
     (e) => {
-      if (alchemizerInventory.length < 3) {
-        alchemizerInventory = MineralModel.getInventory();
+      // Instance of mineral inventory
+      alchemizerInventory = MineralModel.getInventory();
+      // If no items nothing to do
+      if (alchemizerInventory.length == 0) {
+        ui.displayAnnouncement('Nothing to alchemize');
+      // If only 1 item can't create alchemical reaction
+      } else if (alchemizerInventory.length == 1) {
+        ui.displayAnnouncement('Alchemy requires at least 2 items');
+      // Else, alchemize
+      } else if (alchemizerInventory.length < 3) {
         alchemizer.addComponentOrReplace(
           new OnPointerDown(
             (e) => {
@@ -247,7 +255,7 @@ function smeltingEvent(items: Array<string>): boolean {
 };
 
 /**
- * Utility function to clear minerals
+ * Utility function to clear minerals from the game engine
  * @param {Array<string>} removed : An array of minerals already removed from the scene
  */
 function removeMinerals(removed: Array<string>) {
@@ -280,6 +288,14 @@ function removeMinerals(removed: Array<string>) {
 /**
  * Reset the state and random positions of all minerals
  */
-function resetMinerals() {//here
-  // TODO
+function resetMinerals() {
+  sphalerite.reset();
+  galena.reset();
+  pyrite.reset();
+  zincite.reset();
+  chalcopyrite.reset();
+  hopeite.reset();
+  ghanite.reset();
+  amethyst.reset();
+  log('Minerals reset...');
 };

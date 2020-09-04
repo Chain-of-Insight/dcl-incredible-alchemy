@@ -118,7 +118,7 @@ export class Mineral extends Entity {
     this.isMining = false;
 
     let position = this.getSpawnPosition();
-    this.addComponent(new Transform({
+    this.addComponentOrReplace(new Transform({
       position: new Vector3(position.x, position.y ,position.z),
       scale: new Vector3(1,1,1)
     }));
