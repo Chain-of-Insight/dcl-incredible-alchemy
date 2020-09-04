@@ -147,7 +147,7 @@ alchemizer.addComponent(
       } else if (alchemizerInventory.length == 1) {
         ui.displayAnnouncement('Alchemy requires at least 2 items');
       // Else, alchemize
-      } else if (alchemizerInventory.length < 3) {
+      } else if (alchemizerInventory.length <= 3) {
         alchemizer.addComponentOrReplace(
           new OnPointerDown(
             (e) => {
@@ -165,7 +165,7 @@ alchemizer.addComponent(
                 ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
         
                 // Remove minerals from engine
-                resetMinerals();
+                resetScene();
               }
             },
             { 
@@ -286,9 +286,10 @@ function removeMinerals(removed: Array<string>) {
 };
 
 /**
- * Reset the state and random positions of all minerals
+ * Reset the state and random positions of all minerals, reset alchemizer
  */
-function resetMinerals() {
+function resetScene() {
+  // Reset minerals
   sphalerite.reset();
   galena.reset();
   pyrite.reset();
@@ -297,5 +298,53 @@ function resetMinerals() {
   hopeite.reset();
   ghanite.reset();
   amethyst.reset();
-  log('Minerals reset...');
+
+  // Reset alchemizer
+  alchemizer.addComponentOrReplace(
+    new OnPointerDown(
+      (e) => {
+        // Instance of mineral inventory
+        alchemizerInventory = MineralModel.getInventory();
+        // If no items nothing to do
+        if (alchemizerInventory.length == 0) {
+          ui.displayAnnouncement('Nothing to alchemize');
+        // If only 1 item can't create alchemical reaction
+        } else if (alchemizerInventory.length == 1) {
+          ui.displayAnnouncement('Alchemy requires at least 2 items');
+        // Else, alchemize
+        } else if (alchemizerInventory.length <= 3) {
+          alchemizer.addComponentOrReplace(
+            new OnPointerDown(
+              (e) => {
+                let result = smeltingEvent(alchemizerInventory);
+                if (result) {
+                  // Gallium was produced!
+                  ui.displayAnnouncement('Galium added to your inventory!');
+                  
+                  // Remove minerals from engine
+                  removeMinerals(alchemizerInventory);
+                  
+                  // Set Galium icon
+                } else {
+                  // Alchemy failed
+                  ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+          
+                  // Remove minerals from engine
+                  resetScene();
+                }
+              },
+              { 
+                button: ActionButton.SECONDARY,
+                hoverText: 'alchemize'
+              }
+            )
+          )
+        }
+      },
+      { 
+        button: ActionButton.PRIMARY,
+        hoverText: 'deposit ore'
+      }
+    )
+  );
 };
