@@ -148,7 +148,7 @@ zincite.addComponent(
     },
     { 
       button: ActionButton.POINTER, 
-      hoverText: 'Zincite Ore' 
+      hoverText: 'Zincite Crystal' 
     }
   )
 );
