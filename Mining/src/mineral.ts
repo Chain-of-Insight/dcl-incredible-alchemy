@@ -51,7 +51,8 @@ export class Mineral extends Entity {
 
     let position = this.getSpawnPosition();
     this.addComponent(new Transform({
-      position: new Vector3(position.x, position.y ,position.z)
+      position: new Vector3(position.x, position.y ,position.z),
+      scale: new Vector3(1,1,1)
     }));
 
     // XXX TODO: add random model scale size
@@ -162,8 +163,8 @@ export class Mineral extends Entity {
     } else {
       this.isMining = true;
       let currentScale = this.getComponent(Transform).position.z;
-      let startScale = new Vector3(currentScale * 0.05, currentScale * 0.05, currentScale * 0.05);
-      let endScale = new Vector3(currentScale * 0.025, currentScale * 0.025, currentScale * 0.025);
+      let startScale = new Vector3(currentScale * 0.075, currentScale * 0.075, currentScale * 0.075);
+      let endScale = new Vector3(currentScale * 0.035, currentScale * 0.035, currentScale * 0.045);
   
       this.addComponent(
         new utils.ScaleTransformComponent(
