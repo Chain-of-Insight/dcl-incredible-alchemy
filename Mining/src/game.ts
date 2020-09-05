@@ -1,8 +1,5 @@
-// import utils from '../node_modules/decentraland-ecs-utils/index';
-// import { InterpolationType } from '../node_modules/decentraland-ecs-utils/transform/math/interpolation';
+import utils from '../node_modules/decentraland-ecs-utils/index';
 import * as ui from '../node_modules/@dcl/ui-utils/index';
-
-// import { ImageSection } from '../node_modules/@dcl/ui-utils/utils/types';
 
 import { Mineral } from "./mineral";
 
@@ -195,32 +192,36 @@ alchemizer.addComponent(
           new OnPointerDown(
             (e) => {
               let result = smeltingEvent(alchemizerInventory);
-              if (result) {
-                // Gallium was produced!
-                ui.displayAnnouncement('Galium added to your inventory!');
-
-                galliumAcquiredSound.getComponent(AudioSource).playOnce();
-                
-                // Set Galium icon
-                galliumIcon = new ui.SmallIcon(
-                  'models/icons/ores.png', 
-                  // x, y
-                  -25, 80, 
-                  // Width, height
-                  48, 48, 
-                  // Sprite sheet position
-                  spritePositions[GALLIUM]
-                );
-
-                // Remove minerals from engine
-                removeMinerals();
-              } else {
-                // Alchemy failed
-                ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
-        
-                // Remove minerals from engine
-                resetScene();
-              }
+              alchemizer.addComponentOrReplace(
+                new utils.Delay(3500, () => {
+                  if (result) {
+                    // Gallium was produced!
+                    ui.displayAnnouncement('Galium added to your inventory!');
+    
+                    galliumAcquiredSound.getComponent(AudioSource).playOnce();
+                    
+                    // Set Galium icon
+                    galliumIcon = new ui.SmallIcon(
+                      'models/icons/ores.png', 
+                      // x, y
+                      -25, 80, 
+                      // Width, height
+                      48, 48, 
+                      // Sprite sheet position
+                      spritePositions[GALLIUM]
+                    );
+    
+                    // Remove minerals from engine
+                    removeMinerals();
+                  } else {
+                    // Alchemy failed
+                    ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+            
+                    // Remove minerals from engine
+                    resetScene();
+                  }
+                })
+              );
             },
             { 
               button: ActionButton.SECONDARY,
@@ -357,32 +358,36 @@ function resetScene() {
             new OnPointerDown(
               (e) => {
                 let result = smeltingEvent(alchemizerInventory);
-                if (result) {
-                  // Gallium was produced!
-                  ui.displayAnnouncement('Gallium added to your inventory!');
-
-                  galliumAcquiredSound.getComponent(AudioSource).playOnce();
-                  
-                  // Set Galium icon
-                  galliumIcon = new ui.SmallIcon(
-                    'models/icons/ores.png', 
-                    // x, y
-                    -25, 80, 
-                    // Width, height
-                    48, 48, 
-                    // Sprite sheet position
-                    spritePositions[GALLIUM]
-                  );
-
-                  // Remove minerals from engine
-                  removeMinerals();
-                } else {
-                  // Alchemy failed
-                  ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
-          
-                  // Remove minerals from engine
-                  resetScene();
-                }
+                alchemizer.addComponentOrReplace(
+                  new utils.Delay(3500, () => {
+                    if (result) {
+                      // Gallium was produced!
+                      ui.displayAnnouncement('Gallium added to your inventory!');
+    
+                      galliumAcquiredSound.getComponent(AudioSource).playOnce();
+                      
+                      // Set Galium icon
+                      galliumIcon = new ui.SmallIcon(
+                        'models/icons/ores.png', 
+                        // x, y
+                        -25, 80, 
+                        // Width, height
+                        48, 48, 
+                        // Sprite sheet position
+                        spritePositions[GALLIUM]
+                      );
+    
+                      // Remove minerals from engine
+                      removeMinerals();
+                    } else {
+                      // Alchemy failed
+                      ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+              
+                      // Remove minerals from engine
+                      resetScene();
+                    }
+                  })
+                );
               },
               { 
                 button: ActionButton.SECONDARY,
