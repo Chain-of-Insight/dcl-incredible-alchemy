@@ -100,6 +100,9 @@ export class Mineral extends Entity {
   };
 
   public destroy() {
+    if (this.icon) {
+      this.icon.image.visible = false;
+    }
     if (this.isAddedToEngine()) {
       engine.removeEntity(this);
     }
@@ -110,11 +113,14 @@ export class Mineral extends Entity {
       inventory = [];
     }
 
+    if (this.icon) {
+      this.icon.image.visible = false;
+    }
+
     if (this.isAddedToEngine()) {
       engine.removeEntity(this);
     }
 
-    this.icon = null;
     this.isMining = false;
 
     let position = this.getSpawnPosition();

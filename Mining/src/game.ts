@@ -15,6 +15,7 @@ const CHALCOPYRITE = "chalcopyrite";
 const HOPEITE = "hopeite";
 const GHANITE = "ghanite";
 const AMETHYST = "amethyst";
+const GALLIUM = "gallium";
 
 // Sprite sheet positions (inventory icons)
 const spritePositions = {};
@@ -62,6 +63,12 @@ spritePositions[AMETHYST] = {
   sourceLeft: 240, 
   sourceTop: 95
 };
+spritePositions[GALLIUM] = {
+  sourceWidth: 50, 
+  sourceHeight: 50, 
+  sourceLeft: 530, 
+  sourceTop: 50
+};
 
 // 3D Models (minerals)
 const models = {};
@@ -74,6 +81,40 @@ models[HOPEITE] = new GLTFShape('models/minerals/hopeite.glb');
 models[GHANITE] = new GLTFShape('models/minerals/ghanite.glb');
 models[AMETHYST] = new GLTFShape('models/minerals/amethyst.glb');
 models['alchemizer'] = new GLTFShape('models/alchemy/Lab_Sphere_01.glb');
+
+// Sounds
+// Gallium success
+const galliumAcquiredSound = new Entity();
+galliumAcquiredSound.addComponent(
+  new AudioSource(
+    new AudioClip('sounds/gallium.mp3')
+  )
+);
+galliumAcquiredSound.addComponent(new Transform());
+galliumAcquiredSound.getComponent(Transform).position = Camera.instance.position;
+engine.addEntity(galliumAcquiredSound);
+
+// Loading alchemizer
+const loadingAlchemizerSound = new Entity();
+loadingAlchemizerSound.addComponent(
+  new AudioSource(
+    new AudioClip('sounds/loading.mp3')
+  )
+);
+loadingAlchemizerSound.addComponent(new Transform());
+loadingAlchemizerSound.getComponent(Transform).position = Camera.instance.position;
+engine.addEntity(loadingAlchemizerSound);
+
+// Alchemizer
+const alchemizerSound = new Entity();
+alchemizerSound.addComponent(
+  new AudioSource(
+    new AudioClip('sounds/alchemizer.mp3')
+  )
+);
+alchemizerSound.addComponent(new Transform());
+alchemizerSound.getComponent(Transform).position = Camera.instance.position;
+engine.addEntity(alchemizerSound);
 
 // Create minerals
 // Sphalerite (y)
@@ -128,6 +169,7 @@ const amethyst = new Mineral(
 // Alchemizer inventory
 let alchemizerInventory = [];
 let MineralModel = sphalerite;
+let galliumIcon;
 
 // Alchmey station
 const alchemizer = new Entity();
@@ -140,6 +182,7 @@ alchemizer.addComponent(
     (e) => {
       // Instance of mineral inventory
       alchemizerInventory = MineralModel.getInventory();
+      loadingAlchemizerSound.getComponent(AudioSource).playOnce();
       // If no items nothing to do
       if (alchemizerInventory.length == 0) {
         ui.displayAnnouncement('Nothing to alchemize');
@@ -155,11 +198,22 @@ alchemizer.addComponent(
               if (result) {
                 // Gallium was produced!
                 ui.displayAnnouncement('Galium added to your inventory!');
-                
-                // Remove minerals from engine
-                removeMinerals(alchemizerInventory);
+
+                galliumAcquiredSound.getComponent(AudioSource).playOnce();
                 
                 // Set Galium icon
+                galliumIcon = new ui.SmallIcon(
+                  'models/icons/ores.png', 
+                  // x, y
+                  -25, 80, 
+                  // Width, height
+                  48, 48, 
+                  // Sprite sheet position
+                  spritePositions[GALLIUM]
+                );
+
+                // Remove minerals from engine
+                removeMinerals();
               } else {
                 // Alchemy failed
                 ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
@@ -185,6 +239,8 @@ alchemizer.addComponent(
 
 function smeltingEvent(items: Array<string>): boolean {
   let isGallium = false;
+
+  alchemizerSound.getComponent(AudioSource).playOnce();
 
   // Alchemizer must be full
   if (items.length !== 3) {
@@ -256,33 +312,16 @@ function smeltingEvent(items: Array<string>): boolean {
 
 /**
  * Utility function to clear minerals from the game engine
- * @param {Array<string>} removed : An array of minerals already removed from the scene
  */
-function removeMinerals(removed: Array<string>) {
-  if (removed.indexOf(SPHALERITE) == -1) {
-    sphalerite.destroy();
-  }
-  if (removed.indexOf(GALENA) == -1) {
-    galena.destroy();
-  }
-  if (removed.indexOf(PYRITE) == -1) {
-    pyrite.destroy();
-  }
-  if (removed.indexOf(ZINCITE) == -1) {
-    zincite.destroy();
-  }
-  if (removed.indexOf(CHALCOPYRITE) == -1) {
-    chalcopyrite.destroy();
-  }
-  if (removed.indexOf(HOPEITE) == -1) {
-    hopeite.destroy();
-  }
-  if (removed.indexOf(GHANITE) == -1) {
-    ghanite.destroy();
-  }
-  if (removed.indexOf(AMETHYST) == -1) {
-    amethyst.destroy();
-  }
+function removeMinerals() {
+  sphalerite.destroy();
+  galena.destroy();
+  pyrite.destroy();
+  zincite.destroy();
+  chalcopyrite.destroy();
+  hopeite.destroy();
+  ghanite.destroy();
+  amethyst.destroy();
 };
 
 /**
@@ -305,6 +344,7 @@ function resetScene() {
       (e) => {
         // Instance of mineral inventory
         alchemizerInventory = MineralModel.getInventory();
+        loadingAlchemizerSound.getComponent(AudioSource).playOnce();
         // If no items nothing to do
         if (alchemizerInventory.length == 0) {
           ui.displayAnnouncement('Nothing to alchemize');
@@ -319,12 +359,23 @@ function resetScene() {
                 let result = smeltingEvent(alchemizerInventory);
                 if (result) {
                   // Gallium was produced!
-                  ui.displayAnnouncement('Galium added to your inventory!');
-                  
-                  // Remove minerals from engine
-                  removeMinerals(alchemizerInventory);
+                  ui.displayAnnouncement('Gallium added to your inventory!');
+
+                  galliumAcquiredSound.getComponent(AudioSource).playOnce();
                   
                   // Set Galium icon
+                  galliumIcon = new ui.SmallIcon(
+                    'models/icons/ores.png', 
+                    // x, y
+                    -25, 80, 
+                    // Width, height
+                    48, 48, 
+                    // Sprite sheet position
+                    spritePositions[GALLIUM]
+                  );
+
+                  // Remove minerals from engine
+                  removeMinerals();
                 } else {
                   // Alchemy failed
                   ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
