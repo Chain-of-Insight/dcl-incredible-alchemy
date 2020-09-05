@@ -113,6 +113,14 @@ export class Mineral extends Entity {
       inventory = [];
     }
 
+    if (currentSpawns.x.length) {
+      currentSpawns.x = [];
+    }
+
+    if (currentSpawns.z.length) {
+      currentSpawns.z = [];
+    }
+
     if (this.icon) {
       this.icon.image.visible = false;
     }
