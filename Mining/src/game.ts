@@ -86,6 +86,7 @@ models[GHANITE] = new GLTFShape('models/minerals/ghanite.glb');
 models[AMETHYST] = new GLTFShape('models/minerals/amethyst.glb');
 models['alchemizer'] = new GLTFShape('models/alchemy/Lab_Sphere_01.glb');
 models['aluminum_door'] = new GLTFShape('models/door/FenceIronDoor_01.glb');
+models['door_rubble'] = new GLTFShape('models/door/debris/debris.glb');
 
 // Sounds
 // Gallium success
@@ -395,6 +396,16 @@ aluminumDoor.addComponent(new Transform({ position: new Vector3(15, 0, 15) }));
 engine.addEntity(aluminumDoor);
 initDoor();
 
+// Door rubble
+const doorRubble = new Entity();
+doorRubble.addComponent(models['door_rubble']);
+doorRubble.addComponent(
+  new Transform({ 
+    position: new Vector3(15, -100, 15),
+    scale: new Vector3(0.225, 0.225, 0.225)
+  }));
+engine.addEntity(doorRubble);
+
 function initDoor() {
   aluminumDoor.addComponent(
     new OnPointerDown(
@@ -433,7 +444,6 @@ function createDoorListener() {
         aluminumDoor.addComponentOrReplace(
           new OnPointerDown(
             (e) => {
-              log(e);
               let hit1 = Math.random() >= 0.5,
                   hit2 = Math.random() >= 0.5,
                   hit3 = Math.random() >= 0.5,
@@ -449,7 +459,6 @@ function createDoorListener() {
 
               // Gallium application wait time
               let timeSinceApplication = getCurrentTimestamp();
-              log('time since', timeSinceApplication);
               if ((timeSinceApplication - galliumApplyStarted) < aluminumReactionDuration) {
                 // Display wait message
                 new AlchemistNPC(GalliumApplyNotReady, 0);
@@ -458,8 +467,6 @@ function createDoorListener() {
 
               if (penetrations >= 2) {
                 lockIsBroken = true;
-
-                log('Door broken');
                 // Play sound shattering metal
                 breakDoorSound.getComponent(AudioSource).playOnce();
                 
@@ -468,22 +475,31 @@ function createDoorListener() {
                     // Destroy door
                     let currentPosition = aluminumDoor.getComponent(Transform).position;
                     let destination = new Vector3(currentPosition.x, -100, currentPosition.z);
-                    // let duration = Math.abs(destination.x - currentPosition.x) * 0.025;
                     let duration = 3;
                     aluminumDoor.addComponentOrReplace(
                       new utils.MoveTransformComponent(
                         currentPosition,
                         destination,
-                        duration,
+                        duration, // 3 seconds
                         // On finished callback
-                        () => {
-                          // Display destroyed door model
-                          //here
-                          log('door movetransform finished');
-                        },
+                        () => {},
                         InterpolationType.EASEQUAD
                       )
-                    )
+                    );
+                    let rubblePosition = doorRubble.getComponent(Transform).position;
+                    let rubbleDestination = new Vector3(
+                      (currentPosition.x - 0.5), currentPosition.y, (currentPosition.z - 0.5)
+                    );
+                    doorRubble.addComponentOrReplace(
+                      new utils.MoveTransformComponent(
+                        rubblePosition,
+                        rubbleDestination,
+                        0,
+                        // On finished callback
+                        () => {},
+                        InterpolationType.EASEQUAD
+                      )
+                    );
                   })
                 );                
               } else {
@@ -492,7 +508,7 @@ function createDoorListener() {
             },
             { 
               button: ActionButton.SECONDARY,
-              hoverText: 'hit the door'
+              hoverText: 'hit door'
             }
           )
         );
