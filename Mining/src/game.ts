@@ -113,6 +113,17 @@ alchemizerSound.addComponent(new Transform());
 alchemizerSound.getComponent(Transform).position = Camera.instance.position;
 engine.addEntity(alchemizerSound);
 
+// Alchemy failed
+const alchemizerFailedSound = new Entity();
+alchemizerFailedSound.addComponent(
+  new AudioSource(
+    new AudioClip('sounds/failed.mp3')
+  )
+);
+alchemizerFailedSound.addComponent(new Transform());
+alchemizerFailedSound.getComponent(Transform).position = Camera.instance.position;
+engine.addEntity(alchemizerFailedSound);
+
 // Create minerals
 // Sphalerite (y)
 const sphalerite = new Mineral(
@@ -216,6 +227,8 @@ alchemizer.addComponent(
                   } else {
                     // Alchemy failed
                     ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+
+                    alchemizerFailedSound.getComponent(AudioSource).playOnce();
             
                     // Remove minerals from engine
                     resetScene();
@@ -382,6 +395,8 @@ function resetScene() {
                     } else {
                       // Alchemy failed
                       ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+
+                      alchemizerFailedSound.getComponent(AudioSource).playOnce();
               
                       // Remove minerals from engine
                       resetScene();
