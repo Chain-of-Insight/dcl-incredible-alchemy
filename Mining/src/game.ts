@@ -336,7 +336,6 @@ function resetScene() {
   hopeite.reset();
   ghanite.reset();
   amethyst.reset();
-
   // Reset alchemizer
   createAlchemyListener();
 };
