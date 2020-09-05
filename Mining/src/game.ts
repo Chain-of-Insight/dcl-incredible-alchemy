@@ -1,6 +1,7 @@
 import utils from '../node_modules/decentraland-ecs-utils/index';
 import * as ui from '../node_modules/@dcl/ui-utils/index';
-
+import { InterpolationType } from '../node_modules/decentraland-ecs-utils/transform/math/interpolation';
+import { AlchemistNPC, IntroText, HasGalliumText, GalliumApplyNotReady, KeepHittingText} from "./messenger";
 import { Mineral } from "./mineral";
 
 // Mineral types
@@ -15,6 +16,10 @@ const AMETHYST = "amethyst";
 const GALLIUM = "gallium";
 // State
 let hasGallium = false;
+let lockIsBroken = false;
+let galliumApplyStarted;
+// let aluminumReactionDuration = 20000; // 20 seconds
+let aluminumReactionDuration = 5000; // 5 seconds
 
 // Sprite sheet positions (inventory icons)
 const spritePositions = {};
@@ -80,6 +85,7 @@ models[HOPEITE] = new GLTFShape('models/minerals/hopeite.glb');
 models[GHANITE] = new GLTFShape('models/minerals/ghanite.glb');
 models[AMETHYST] = new GLTFShape('models/minerals/amethyst.glb');
 models['alchemizer'] = new GLTFShape('models/alchemy/Lab_Sphere_01.glb');
+models['aluminum_door'] = new GLTFShape('models/door/FenceIronDoor_01.glb');
 
 // Sounds
 // Gallium success
@@ -125,6 +131,39 @@ alchemizerFailedSound.addComponent(
 alchemizerFailedSound.addComponent(new Transform());
 alchemizerFailedSound.getComponent(Transform).position = Camera.instance.position;
 engine.addEntity(alchemizerFailedSound);
+
+// Applying gallium to door
+const applyGalliumSound = new Entity();
+applyGalliumSound.addComponent(
+  new AudioSource(
+    new AudioClip('sounds/scraping.mp3')
+  )
+);
+applyGalliumSound.addComponent(new Transform());
+applyGalliumSound.getComponent(Transform).position = Camera.instance.position;
+engine.addEntity(applyGalliumSound);
+
+// Hit door
+const hitDoorSound = new Entity();
+hitDoorSound.addComponent(
+  new AudioSource(
+    new AudioClip('sounds/hitdoor.mp3')
+  )
+);
+hitDoorSound.addComponent(new Transform());
+hitDoorSound.getComponent(Transform).position = Camera.instance.position;
+engine.addEntity(hitDoorSound);
+
+// Break door
+const breakDoorSound = new Entity();
+breakDoorSound.addComponent(
+  new AudioSource(
+    new AudioClip('sounds/breakdoor.mp3')
+  )
+);
+breakDoorSound.addComponent(new Transform());
+breakDoorSound.getComponent(Transform).position = Camera.instance.position;
+engine.addEntity(breakDoorSound);
 
 // Create minerals
 // Sphalerite (y)
@@ -176,12 +215,15 @@ const amethyst = new Mineral(
   spritePositions[AMETHYST]
 );
 
+// Display introduction message
+new AlchemistNPC(IntroText, 0);
+
 // Alchemizer inventory
 let alchemizerInventory = [];
 let MineralModel = sphalerite;
 let galliumIcon;
 
-// Alchmey station
+// Alchemy station
 const alchemizer = new Entity();
 alchemizer.addComponent(models['alchemizer']);
 alchemizer.addComponent(new Transform({ position: new Vector3(7, 0, 7) }));
@@ -232,6 +274,12 @@ function createAlchemyListener() {
     
                       // Remove minerals from engine
                       removeMinerals();
+
+                      // Display helper message
+                      new AlchemistNPC(HasGalliumText, 0);
+
+                      // Modify door listener
+                      createDoorListener();
                     } else {
                       if (!hasGallium) {
                         alchemizerFailedSound.getComponent(AudioSource).playOnce();
@@ -283,7 +331,7 @@ function smeltingEvent(items: Array<string>): boolean {
       slots: Array<boolean> = [slot1, slot2, slot3];
   
   for (let i = 0; i < items.length; i++) {
-    switch (items[0]) {
+    switch (items[i]) {
       // (y)
       case SPHALERITE:
         slots[i] = true;
@@ -301,7 +349,7 @@ function smeltingEvent(items: Array<string>): boolean {
     }
   }
 
-  if (slots[0] && slots[1] && slots[2]) {
+  if (slots[0] == true && slots[1] == true && slots[2] == true) {
     isGallium = true;
     hasGallium = true;
   }
@@ -339,3 +387,124 @@ function resetScene() {
   // Reset alchemizer
   createAlchemyListener();
 };
+
+// Aluminum door
+const aluminumDoor = new Entity();
+aluminumDoor.addComponent(models['aluminum_door']);
+aluminumDoor.addComponent(new Transform({ position: new Vector3(15, 0, 15) }));
+engine.addEntity(aluminumDoor);
+initDoor();
+
+function initDoor() {
+  aluminumDoor.addComponent(
+    new OnPointerDown(
+      (e) => {
+        ui.displayAnnouncement('The door seems to be made of a lightweight, shiny metal');
+      },
+      { 
+        button: ActionButton.POINTER,
+        hoverText: 'analyze'
+      }
+    )
+  );
+}
+
+function createDoorListener() {
+  if (!hasGallium || lockIsBroken) {
+    return;
+  }
+
+  aluminumDoor.addComponentOrReplace(
+    new OnPointerDown(
+      (e) => {
+        // Remove gallium icon from ui
+        // (We keep the gallium in inventory
+        // since it controls state)
+        if (galliumIcon) {
+          galliumIcon.image.visible = false;
+        }
+
+        // Play scraping sound
+        applyGalliumSound.getComponent(AudioSource).playOnce();
+
+        galliumApplyStarted = new Date().getTime();
+
+        // Create next action
+        aluminumDoor.addComponentOrReplace(
+          new OnPointerDown(
+            (e) => {
+              log(e);
+              let hit1 = Math.random() >= 0.5,
+                  hit2 = Math.random() >= 0.5,
+                  hit3 = Math.random() >= 0.5,
+                  hits = [hit1, hit2, hit3],
+                  penetrations = 0;
+
+              // Play hits sound
+              hitDoorSound.getComponent(AudioSource).playOnce();
+
+              hits.forEach(worked => {
+                ++penetrations;
+              });
+
+              // Gallium application wait time
+              let timeSinceApplication = getCurrentTimestamp();
+              log('time since', timeSinceApplication);
+              if ((timeSinceApplication - galliumApplyStarted) < aluminumReactionDuration) {
+                // Display wait message
+                new AlchemistNPC(GalliumApplyNotReady, 0);
+                return;
+              }
+
+              if (penetrations >= 2) {
+                lockIsBroken = true;
+
+                log('Door broken');
+                // Play sound shattering metal
+                breakDoorSound.getComponent(AudioSource).playOnce();
+                
+                aluminumDoor.addComponentOrReplace(
+                  new utils.Delay(1000, () => {
+                    // Destroy door
+                    let currentPosition = aluminumDoor.getComponent(Transform).position;
+                    let destination = new Vector3(currentPosition.x, -100, currentPosition.z);
+                    // let duration = Math.abs(destination.x - currentPosition.x) * 0.025;
+                    let duration = 3;
+                    aluminumDoor.addComponentOrReplace(
+                      new utils.MoveTransformComponent(
+                        currentPosition,
+                        destination,
+                        duration,
+                        // On finished callback
+                        () => {
+                          // Display destroyed door model
+                          //here
+                          log('door movetransform finished');
+                        },
+                        InterpolationType.EASEQUAD
+                      )
+                    )
+                  })
+                );                
+              } else {
+                new AlchemistNPC(KeepHittingText, 0);
+              }
+            },
+            { 
+              button: ActionButton.SECONDARY,
+              hoverText: 'hit the door'
+            }
+          )
+        );
+      },
+      { 
+        button: ActionButton.PRIMARY,
+        hoverText: 'apply gallium'
+      }
+    )
+  );
+}
+
+function getCurrentTimestamp() {
+  return new Date().getTime();
+}
