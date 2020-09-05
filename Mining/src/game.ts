@@ -186,72 +186,79 @@ const alchemizer = new Entity();
 alchemizer.addComponent(models['alchemizer']);
 alchemizer.addComponent(new Transform({ position: new Vector3(7, 0, 7) }));
 engine.addEntity(alchemizer);
+createAlchemyListener();
 
-alchemizer.addComponent(
-  new OnPointerDown(
-    (e) => {
-      // Instance of mineral inventory
-      alchemizerInventory = MineralModel.getInventory();
-      loadingAlchemizerSound.getComponent(AudioSource).playOnce();
-      // If no items nothing to do
-      if (alchemizerInventory.length == 0) {
-        ui.displayAnnouncement('Nothing to alchemize');
-      // If only 1 item can't create alchemical reaction
-      } else if (alchemizerInventory.length == 1) {
-        ui.displayAnnouncement('Alchemy requires at least 2 items');
-      // Else, alchemize
-      } else if (alchemizerInventory.length <= 3) {
-        alchemizer.addComponentOrReplace(
-          new OnPointerDown(
-            (e) => {
-              let result = smeltingEvent(alchemizerInventory);
-              alchemizer.addComponentOrReplace(
-                new utils.Delay(3500, () => {
-                  if (result) {
-                    // Gallium was produced!
-                    ui.displayAnnouncement('Galium added to your inventory!');
+/**
+ * Create or replace Alchemy event listeners
+ * @see {Entity} alchemizer
+ */
+function createAlchemyListener() {
+  alchemizer.addComponentOrReplace(
+    new OnPointerDown(
+      (e) => {
+        // Instance of mineral inventory
+        alchemizerInventory = MineralModel.getInventory();
+        loadingAlchemizerSound.getComponent(AudioSource).playOnce();
+        // If no items nothing to do
+        if (alchemizerInventory.length == 0) {
+          ui.displayAnnouncement('Nothing to alchemize');
+        // If only 1 item can't create alchemical reaction
+        } else if (alchemizerInventory.length == 1) {
+          ui.displayAnnouncement('Alchemy requires at least 2 items');
+        // Else, alchemize
+        } else if (alchemizerInventory.length <= 3) {
+          alchemizer.addComponentOrReplace(
+            new OnPointerDown(
+              (e) => {
+                let result = smeltingEvent(alchemizerInventory);
+                alchemizer.addComponentOrReplace(
+                  new utils.Delay(3500, () => {
+                    if (result) {
+                      // Gallium was produced!
+                      ui.displayAnnouncement('Gallium added to your inventory!');
     
-                    galliumAcquiredSound.getComponent(AudioSource).playOnce();
-                    
-                    // Set Galium icon
-                    galliumIcon = new ui.SmallIcon(
-                      'models/icons/ores.png', 
-                      // x, y
-                      -25, 80, 
-                      // Width, height
-                      48, 48, 
-                      // Sprite sheet position
-                      spritePositions[GALLIUM]
-                    );
+                      galliumAcquiredSound.getComponent(AudioSource).playOnce();
+                      
+                      // Set Galium icon
+                      galliumIcon = new ui.SmallIcon(
+                        'models/icons/ores.png', 
+                        // x, y
+                        -25, 80, 
+                        // Width, height
+                        48, 48, 
+                        // Sprite sheet position
+                        spritePositions[GALLIUM]
+                      );
     
-                    // Remove minerals from engine
-                    removeMinerals();
-                  } else {
-                    if (!hasGallium) {
-                      alchemizerFailedSound.getComponent(AudioSource).playOnce();
-                      // Alchemy failed
-                      ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
                       // Remove minerals from engine
-                      resetScene();
+                      removeMinerals();
+                    } else {
+                      if (!hasGallium) {
+                        alchemizerFailedSound.getComponent(AudioSource).playOnce();
+                        // Alchemy failed
+                        ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+                        // Remove minerals from engine
+                        resetScene();
+                      }
                     }
-                  }
-                })
-              );
-            },
-            { 
-              button: ActionButton.SECONDARY,
-              hoverText: 'alchemize'
-            }
+                  })
+                );
+              },
+              { 
+                button: ActionButton.SECONDARY,
+                hoverText: 'alchemize'
+              }
+            )
           )
-        )
+        }
+      },
+      { 
+        button: ActionButton.PRIMARY,
+        hoverText: 'deposit ore'
       }
-    },
-    { 
-      button: ActionButton.PRIMARY,
-      hoverText: 'deposit ore'
-    }
-  )
-);
+    )
+  );
+};
 
 function smeltingEvent(items: Array<string>): boolean {
   let isGallium = false;
@@ -362,69 +369,5 @@ function resetScene() {
   amethyst.reset();
 
   // Reset alchemizer
-  alchemizer.addComponentOrReplace(
-    new OnPointerDown(
-      (e) => {
-        // Instance of mineral inventory
-        alchemizerInventory = MineralModel.getInventory();
-        loadingAlchemizerSound.getComponent(AudioSource).playOnce();
-        // If no items nothing to do
-        if (alchemizerInventory.length == 0) {
-          ui.displayAnnouncement('Nothing to alchemize');
-        // If only 1 item can't create alchemical reaction
-        } else if (alchemizerInventory.length == 1) {
-          ui.displayAnnouncement('Alchemy requires at least 2 items');
-        // Else, alchemize
-        } else if (alchemizerInventory.length <= 3) {
-          alchemizer.addComponentOrReplace(
-            new OnPointerDown(
-              (e) => {
-                let result = smeltingEvent(alchemizerInventory);
-                alchemizer.addComponentOrReplace(
-                  new utils.Delay(3500, () => {
-                    if (result) {
-                      // Gallium was produced!
-                      ui.displayAnnouncement('Gallium added to your inventory!');
-    
-                      galliumAcquiredSound.getComponent(AudioSource).playOnce();
-                      
-                      // Set Galium icon
-                      galliumIcon = new ui.SmallIcon(
-                        'models/icons/ores.png', 
-                        // x, y
-                        -25, 80, 
-                        // Width, height
-                        48, 48, 
-                        // Sprite sheet position
-                        spritePositions[GALLIUM]
-                      );
-    
-                      // Remove minerals from engine
-                      removeMinerals();
-                    } else {
-                      if (!hasGallium) {
-                        alchemizerFailedSound.getComponent(AudioSource).playOnce();
-                        // Alchemy failed
-                        ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
-                        // Remove minerals from engine
-                        resetScene();
-                      }
-                    }
-                  })
-                );
-              },
-              { 
-                button: ActionButton.SECONDARY,
-                hoverText: 'alchemize'
-              }
-            )
-          )
-        }
-      },
-      { 
-        button: ActionButton.PRIMARY,
-        hoverText: 'deposit ore'
-      }
-    )
-  );
+  createAlchemyListener();
 };
