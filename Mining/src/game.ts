@@ -279,60 +279,29 @@ function smeltingEvent(items: Array<string>): boolean {
   // Calculate Gallium production 
   let slot1: boolean = false, 
       slot2: boolean = false, 
-      slot3: boolean = false;
-  // Inventory slot 1
-  switch (items[0]) {
-    // (y)
-    case SPHALERITE:
-      slot1 = true;
-      break;
-    // (y)
-    case GHANITE:
-      slot1 = true;
-      break;
-    // (m)
-    case HOPEITE: // 1 slot = 50% chance, 2 slots = 25% chance, 3 slots = 12.5% chance
-      slot1 = Math.random() >= 0.5;
-      break;
-    default:
-      slot1 = false;
-  }
-  // Inventory slot 2
-  switch (items[1]) {
-    // (y)
-    case SPHALERITE:
-      slot2 = true;
-      break;
-    // (y)
-    case GHANITE:
-      slot2 = true;
-      break;
-    // (m)
-    case HOPEITE:
-      slot2 = Math.random() >= 0.5;
-      break;
-    default:
-      slot2 = false;
-  }
-  // Inventory slot 3
-  switch (items[2]) {
-    // (y)
-    case SPHALERITE:
-      slot3 = true;
-      break;
-    // (y)
-    case GHANITE:
-      slot3 = true;
-      break;
-    // (m)
-    case HOPEITE:
-      slot3 = Math.random() >= 0.5;
-      break;
-    default:
-      slot3 = false;
+      slot3: boolean = false,
+      slots: Array<boolean> = [slot1, slot2, slot3];
+  
+  for (let i = 0; i < items.length; i++) {
+    switch (items[0]) {
+      // (y)
+      case SPHALERITE:
+        slots[i] = true;
+        break;
+      // (y)
+      case GHANITE:
+        slots[i] = true;
+        break;
+      // (m)
+      case HOPEITE: // 1 slot = 50% chance, 2 slots = 25% chance, 3 slots = 12.5% chance
+        slots[i] = Math.random() >= 0.5;
+        break;
+      default:
+        slots[i] = false;
+    }
   }
 
-  if (slot1 && slot2 && slot3) {
+  if (slots[0] && slots[1] && slots[2]) {
     isGallium = true;
     hasGallium = true;
   }
