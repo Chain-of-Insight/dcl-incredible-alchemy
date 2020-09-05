@@ -13,6 +13,8 @@ const HOPEITE = "hopeite";
 const GHANITE = "ghanite";
 const AMETHYST = "amethyst";
 const GALLIUM = "gallium";
+// State
+let hasGallium = false;
 
 // Sprite sheet positions (inventory icons)
 const spritePositions = {};
@@ -225,13 +227,13 @@ alchemizer.addComponent(
                     // Remove minerals from engine
                     removeMinerals();
                   } else {
-                    // Alchemy failed
-                    ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
-
-                    alchemizerFailedSound.getComponent(AudioSource).playOnce();
-            
-                    // Remove minerals from engine
-                    resetScene();
+                    if (!hasGallium) {
+                      alchemizerFailedSound.getComponent(AudioSource).playOnce();
+                      // Alchemy failed
+                      ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+                      // Remove minerals from engine
+                      resetScene();
+                    }
                   }
                 })
               );
@@ -254,7 +256,13 @@ alchemizer.addComponent(
 function smeltingEvent(items: Array<string>): boolean {
   let isGallium = false;
 
-  alchemizerSound.getComponent(AudioSource).playOnce();
+  // Player has gallium
+  if (hasGallium) {
+    alchemizerFailedSound.getComponent(AudioSource).playOnce();
+    return false;
+  } else {
+    alchemizerSound.getComponent(AudioSource).playOnce();
+  }
 
   // Alchemizer must be full
   if (items.length !== 3) {
@@ -319,6 +327,7 @@ function smeltingEvent(items: Array<string>): boolean {
 
   if (slot1 && slot2 && slot3) {
     isGallium = true;
+    hasGallium = true;
   }
 
   return isGallium;
@@ -393,13 +402,13 @@ function resetScene() {
                       // Remove minerals from engine
                       removeMinerals();
                     } else {
-                      // Alchemy failed
-                      ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
-
-                      alchemizerFailedSound.getComponent(AudioSource).playOnce();
-              
-                      // Remove minerals from engine
-                      resetScene();
+                      if (!hasGallium) {
+                        alchemizerFailedSound.getComponent(AudioSource).playOnce();
+                        // Alchemy failed
+                        ui.displayAnnouncement('A foul mixture is produced, you recoil in shame');
+                        // Remove minerals from engine
+                        resetScene();
+                      }
                     }
                   })
                 );
