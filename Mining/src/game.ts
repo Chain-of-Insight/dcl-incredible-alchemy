@@ -1,7 +1,7 @@
 import utils from '../node_modules/decentraland-ecs-utils/index';
 import * as ui from '../node_modules/@dcl/ui-utils/index';
 import { InterpolationType } from '../node_modules/decentraland-ecs-utils/transform/math/interpolation';
-import { AlchemistNPC, IntroText, HasGalliumText, GalliumApplyNotReady, KeepHittingText} from "./messenger";
+import { AlchemistNPC, IntroText, HasGalliumText, GalliumApplyNotReady, KeepHittingText } from './messenger';
 import { Mineral } from './mineral';
 
 // Mineral types
