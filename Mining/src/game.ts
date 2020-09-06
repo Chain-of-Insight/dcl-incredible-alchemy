@@ -11,7 +11,7 @@ const PYRITE = "pyrite";
 const ZINCITE = "zincite";
 const CHALCOPYRITE = "chalcopyrite";
 const HOPEITE = "hopeite";
-const GHANITE = "ghanite";
+const GAHNITE = "gahnite";
 const AMETHYST = "amethyst";
 const GALLIUM = "gallium";
 // State
@@ -56,7 +56,7 @@ spritePositions[HOPEITE] = {
   sourceHeight: 50, 
   sourceLeft: 192
 };
-spritePositions[GHANITE] = {
+spritePositions[GAHNITE] = {
   sourceWidth: 50, 
   sourceHeight: 50, 
   sourceLeft: 336
@@ -82,7 +82,7 @@ models[PYRITE] = new GLTFShape('models/minerals/pyrite.glb');
 models[ZINCITE] = new GLTFShape('models/minerals/zincite.glb');
 models[CHALCOPYRITE] = new GLTFShape('models/minerals/chalcopyrite.glb');
 models[HOPEITE] = new GLTFShape('models/minerals/hopeite.glb');
-models[GHANITE] = new GLTFShape('models/minerals/ghanite.glb');
+models[GAHNITE] = new GLTFShape('models/minerals/gahnite.glb');
 models[AMETHYST] = new GLTFShape('models/minerals/amethyst.glb');
 models['alchemizer'] = new GLTFShape('models/alchemy/Lab_Sphere_01.glb');
 models['aluminum_door'] = new GLTFShape('models/door/FenceIronDoor_01.glb');
@@ -203,11 +203,11 @@ const hopeite = new Mineral(
   HOPEITE,
   spritePositions[HOPEITE]
 );
-// Ghanite (y)
-const ghanite = new Mineral(
-  models[GHANITE],
-  GHANITE,
-  spritePositions[GHANITE]
+// Gahnite (y)
+const gahnite = new Mineral(
+  models[GAHNITE],
+  GAHNITE,
+  spritePositions[GAHNITE]
 );
 // Amethyst (n)
 const amethyst = new Mineral(
@@ -339,7 +339,7 @@ function smeltingEvent(items: Array<string>): boolean {
         slots[i] = true;
         break;
       // (y)
-      case GHANITE:
+      case GAHNITE:
         slots[i] = true;
         break;
       // (m)
@@ -369,7 +369,7 @@ function removeMinerals() {
   zincite.destroy();
   chalcopyrite.destroy();
   hopeite.destroy();
-  ghanite.destroy();
+  gahnite.destroy();
   amethyst.destroy();
 };
 
@@ -384,7 +384,7 @@ function resetScene() {
   zincite.reset();
   chalcopyrite.reset();
   hopeite.reset();
-  ghanite.reset();
+  gahnite.reset();
   amethyst.reset();
   // Reset alchemizer
   createAlchemyListener();
