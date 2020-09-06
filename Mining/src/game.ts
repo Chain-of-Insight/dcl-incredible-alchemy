@@ -445,18 +445,7 @@ function createDoorListener() {
         aluminumDoor.addComponentOrReplace(
           new OnPointerDown(
             (e) => {
-              let hit1 = Math.random() >= 0.5,
-                  hit2 = Math.random() >= 0.5,
-                  hit3 = Math.random() >= 0.5,
-                  hits = [hit1, hit2, hit3],
-                  penetrations = 0;
-
-              // Play hits sound
-              hitDoorSound.getComponent(AudioSource).playOnce();
-
-              hits.forEach(worked => {
-                ++penetrations;
-              });
+              let penetrations = hitDoorAction();
 
               // Gallium application wait time
               let timeSinceApplication = getCurrentTimestamp();
@@ -532,6 +521,24 @@ function createDoorListener() {
   );
 }
 
+function hitDoorAction() {
+  let hit1 = Math.random() >= 0.5,
+      hit2 = Math.random() >= 0.5,
+      hit3 = Math.random() >= 0.5,
+      hits = [hit1, hit2, hit3],
+      penetrations = 0;
+
+  // Play hits sound
+  hitDoorSound.getComponent(AudioSource).playOnce();
+
+  hits.forEach(worked => {
+    if (worked)
+      ++penetrations;
+  });
+
+  return penetrations;
+};
+
 function getCurrentTimestamp() {
   return new Date().getTime();
-}
+};
