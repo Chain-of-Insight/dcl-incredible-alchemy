@@ -223,6 +223,7 @@ new AlchemistNPC(IntroText, 0);
 let alchemizerInventory = [];
 let MineralModel = sphalerite;
 let galliumIcon;
+let galliumAluminumMixtureIcon;
 
 // Alchemy station
 const alchemizer = new Entity();
@@ -500,6 +501,16 @@ function createDoorListener() {
                         InterpolationType.EASEQUAD
                       )
                     );
+                    // Display Gallium-Aluminum mixture icon
+                    galliumAluminumMixtureIcon = new ui.MediumIcon(
+                      'models/icons/ga-al-mix.png',
+                      // x, y
+                      -25, 80, 
+                      // Width, Height
+                      48, 48
+                    );
+                    // Announce mixture added to inventory
+                    ui.displayAnnouncement('Gallium-Aluminum mixture added to your inventory!');
                   })
                 );                
               } else {
